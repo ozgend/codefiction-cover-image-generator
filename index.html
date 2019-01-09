@@ -18,6 +18,7 @@
         
         body {
             width: 100%;
+            background:#666;
         }
         
         .container {
@@ -52,14 +53,14 @@
         
         .controls {
             float: right;
-            width: 100px;
+            width: 164px;
         }
         
-        .controls input[type=range] {
+        /* .controls input[type=range] {
             writing-mode: bt-lr;
             -webkit-appearance: slider-vertical;
             width: 20px;
-        }
+        } */
         
         .canvas-image {
             display: none;
@@ -74,13 +75,20 @@
 
 <body>
     <div class="controls">
-        <input type="range" min="100" max="1000" value="500" onchange="changeFontMultiplier(this)" />
+        <input type="range" min="500" max="1000" value="500" oninput="changeFontMultiplier(this)" />
         <br><button onclick="resetTitlePosition()">Reset</button>
         <br><button onclick="captureImage()">View</button>
+        <select size="5" onchange="switchPodcastCover(this)">
+            <option value="video-podcast.png" selected="true">video-podcast.png</option>
+            <option value="audio-podcast.png">audio-podcast.png</option>
+            <!-- <option value="video-podcast-alternate.png">video-podcast-alternate.png</option> -->
+            <!-- <option value="audio-podcast-alternate.png">audio-podcast-alternate.png</option> -->
+        </select>
     </div>
     <div class="container">
-        <img class="template-image" src="cf-podcast-cover-template-full.png" />
-        <div class="episode-title" draggable="true" contenteditable="true" id="draggable-episode-title" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+        <img class="template-image" src="./covers/video-podcast.png" id="podcast-cover-image" alt="video-podcast.png" />
+        <div class="episode-title" draggable="true" contenteditable="true" id="draggable-episode-title" autocomplete="off"
+            autocorrect="off" autocapitalize="off" spellcheck="false">
             episode title
         </div>
     </div>
@@ -90,6 +98,11 @@
 
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js" type="application/javascript"></script>
     <script>
+        function switchPodcastCover(select) {
+            document.getElementById('podcast-cover-image').src = './covers/' + select.value;
+            document.getElementById('podcast-cover-image').alt = select.value;
+        }
+
         function changeFontMultiplier(range) {
             document.getElementById('draggable-episode-title').style.fontSize = parseInt(range.value) + '%';
         }
@@ -108,11 +121,11 @@
                 canvas: document.getElementById('capture')
             };
 
-            html2canvas(document.getElementsByClassName('container')[0], options).then(function(canvas) {
+            html2canvas(document.getElementsByClassName('container')[0], options).then(function (canvas) {
                 document.getElementsByClassName('canvas-image')[0].innerHTML = '';
                 document.getElementsByClassName('canvas-image')[0].appendChild(canvas);
 
-                let context = canvas.getContext("2d");
+                let context = canvas.getContext('2d');
                 var dataUrl = canvas.toDataURL('image/png');
 
                 console.log(dataUrl);
@@ -120,35 +133,36 @@
                 var previewImage = new Image();
                 previewImage.src = dataUrl;
 
-                var previewWindow = window.open("");
+                var previewWindow = window.open('');
                 previewWindow.document.write(previewImage.outerHTML);
 
             });
         }
 
-        function drag_start(event) {
+        function onDragStart(event) {
             var style = window.getComputedStyle(event.target, null);
-            event.dataTransfer.setData("text/plain",
-                (parseInt(style.getPropertyValue("left"), 10) - event.clientX) + ',' + (parseInt(style.getPropertyValue("top"), 10) - event.clientY));
+            var position = (parseInt(style.getPropertyValue("left"), 10) - event.clientX) + ',' + (parseInt(style.getPropertyValue("top"), 10) - event.clientY)
+            event.dataTransfer.setData('text/plain', position);
         }
 
-        function drag_over(event) {
+        function onDragOver(event) {
             event.preventDefault();
             return false;
         }
 
-        function drop(event) {
+        function onDrop(event) {
             var offset = event.dataTransfer.getData("text/plain").split(',');
-            var dm = document.getElementById('draggable-episode-title');
-            dm.style.left = (event.clientX + parseInt(offset[0], 10)) + 'px';
-            dm.style.top = (event.clientY + parseInt(offset[1], 10)) + 'px';
+            draggableElement.style.left = (event.clientX + parseInt(offset[0], 10)) + 'px';
+            draggableElement.style.top = (event.clientY + parseInt(offset[1], 10)) + 'px';
             event.preventDefault();
             return false;
         }
-        var dm = document.getElementById('draggable-episode-title');
-        dm.addEventListener('dragstart', drag_start, false);
-        document.body.addEventListener('dragover', drag_over, false);
-        document.body.addEventListener('drop', drop, false);
+        
+        var draggableElement = document.getElementById('draggable-episode-title');
+        draggableElement.addEventListener('dragstart', onDragStart, false);
+        document.body.addEventListener('dragover', onDragOver, false);
+        document.body.addEventListener('drop', onDrop, false);
+
     </script>
 </body>
 
