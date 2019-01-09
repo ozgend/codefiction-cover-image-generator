@@ -40,7 +40,7 @@
             overflow: hidden;
             position: absolute;
             right: 0%;
-            top: 0;
+            top: 0%;
             background: white;
             padding: 20px;
             color: #e76853;
@@ -75,8 +75,8 @@
 <body>
     <div class="controls">
         <input type="range" min="100" max="1000" value="500" onchange="changeFontMultiplier(this)" />
-        <br>
-        <button onclick="captureImage()">View</button>
+        <br><button onclick="resetTitlePosition()">Reset</button>
+        <br><button onclick="captureImage()">View</button>
     </div>
     <div class="container">
         <img class="template-image" src="cf-podcast-cover-template-full.png" />
@@ -92,6 +92,14 @@
     <script>
         function changeFontMultiplier(range) {
             document.getElementById('draggable-episode-title').style.fontSize = parseInt(range.value) + '%';
+        }
+
+        function resetTitlePosition() {
+            var titleElement = document.getElementById('draggable-episode-title');
+            titleElement.style.width = '65%';
+            titleElement.style.height = '65%';
+            titleElement.style.right = '0';
+            titleElement.style.top = '0';
         }
 
         function captureImage() {
