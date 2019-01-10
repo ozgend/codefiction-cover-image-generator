@@ -1,0 +1,143 @@
+<html>
+
+<head>
+    <style>
+        body {
+            background-color: black;
+        }
+
+        @keyframes rotate-y {
+            from {
+                transform: rotateY(0deg);
+            }
+
+            to {
+                transform: rotateY(360deg);
+            }
+        }
+
+        .rotate-y {
+            animation: rotate-y 0s linear infinite;
+        }
+
+        .primary{
+            width: 600px;
+            height: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            background-size: 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: 10;
+            background-image: url('./logo/0-cf-white-c-tr.png');
+            filter: hue-rotate(90deg);
+            /* 
+            border: 4px solid gray;
+            border-radius: 48px; 
+            */
+        }
+
+        .primary:hover{
+            cursor: pointer;
+        }
+
+        .controls{
+            position: absolute;
+            top: 0;
+            padding: 8px;
+            background: #c6c6c6;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="primary rotate-y" onclick="toggleControls()"></div>
+
+    <div class="controls">
+        <label>bg-color</label>
+        <input type="color" value="#e76853" onchange="changeBgColor(this)" title="bg-color" /><br><br>
+
+        <label>logo</label><br>
+        <select size="5" onchange="changeLogo(this)">
+            <option value="0-cf-white-c-tr.png" selected="true">0-cf-white-c-tr.png</option>
+            <option value="0-cf-orange-c-tr.png">0-cf-orange-c-tr.png</option>
+        </select><br><br>
+
+        <label>size</label><br>
+        <input type="range" min="100" max="1800" value="600" oninput="changeSize(this)" /><br><br>
+
+        <label>color</label><br>
+        <input type="range" min="0" max="360" value="0" oninput="changeHue(this)" /><br><br>
+
+        <label>animate</label><br>
+        <input type="range" min="0" max="20" value="0" oninput="changeAnimationSpeed(this)" /><br><br>
+    </div>
+
+    <script>
+        let properties = {
+            backgroundColor: '#000000',
+            backgroundImage: '0-cf-white-c-tr.png',
+            webkitFilter: 'hue-rotate(0deg)',
+            animationDuration: '4s',
+            size: '600px'
+        };
+
+        loadProperties();
+
+        function changeBgColor(input) {
+            properties.backgroundColor = input.value;
+            applyPropertyChange();
+        }
+
+        function changeLogo(input) {
+            properties.backgroundImage = "url('/logo/" + input.value + "')";
+            applyPropertyChange();
+        }
+
+        function changeSize(input) {
+            properties.size = input.value + "px"
+            applyPropertyChange();
+        }
+
+        function changeHue(input) {
+            properties.webkitFilter = "hue-rotate(" + input.value + "deg)";
+            applyPropertyChange();
+        }
+
+        function changeAnimationSpeed(input) {
+            properties.animationDuration = input.value + "s";
+            applyPropertyChange();
+        }
+
+        function toggleControls() {
+            let visible = document.getElementsByClassName('controls')[0].style.display == 'block';
+            document.getElementsByClassName('controls')[0].style.display = visible ? 'none' : 'block';
+        }
+
+        function applyPropertyChange() {
+            document.body.style.backgroundColor = properties.backgroundColor;
+            document.getElementsByClassName('primary')[0].style.backgroundImage = properties.backgroundImage;
+            document.getElementsByClassName('primary')[0].style.width = properties.size;
+            document.getElementsByClassName('primary')[0].style.height = properties.size;
+            document.getElementsByClassName('primary')[0].style.webkitFilter = properties.webkitFilter;
+            document.getElementsByClassName('rotate-y')[0].style.animationDuration = properties.animationDuration;
+            saveProperties();
+        };
+
+        function saveProperties() {
+            window.localStorage.setItem('logo-properties', JSON.stringify(properties));
+        }
+
+        function loadProperties() {
+            let raw = window.localStorage.getItem('logo-properties');
+            if (raw) {
+                properties = JSON.parse(raw);
+                applyPropertyChange();
+            }
+        }
+    </script>
+
+</body>
+
+</html>
