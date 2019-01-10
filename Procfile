@@ -1,1 +1,1 @@
-web: python -m http.server $PORT
+web: npm install && ./node_modules/.bin/serve -l $PORT
